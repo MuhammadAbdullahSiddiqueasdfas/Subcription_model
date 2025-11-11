@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .form-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .form-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .api-section {
+            background: #fff;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .api-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .api-endpoint {
+            background: #f1f3f4;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+        
+        .method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .method.get { background: #28a745; color: white; }
+        .method.post { background: #007bff; color: white; }
+        .method.put { background: #ffc107; color: black; }
+        .method.delete { background: #dc3545; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔔 Subscription Tracker</h1>
+            <p>Automated Renewal Reminders System</p>
+        </div>
+        
+        <div class="content">
+            <div class="form-section">
+                <h2>Create New Subscription</h2>
+                <form id="subscriptionForm">
+                    <div class="form-group">
+                        <label for="name">Subscription Name</label>
+                        <input type="text" id="name" name="name" placeholder="e.g., Netflix Premium" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="price">Price</label>
+                        <input type="number" id="price" name="price" placeholder="15.99" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="currency">Currency</label>
+                        <select id="currency" name="currency" required>
+                            <option value="$">USD ($)</option>
+                            <option value="€">EUR (€)</option>
+                            <option value="£">GBP (£)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="frequency">Billing Frequency</label>
+                        <select id="frequency" name="frequency" required>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                            <option value="weekly">Weekly</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="renewalDate">Next Renewal Date</label>
+                        <input type="date" id="renewalDate" name="renewalDate" required>
+                    </div>
+                    
+                    <button type="submit" class="btn">Create Subscription</button>
+                </form>
+                
+                <button id="testWorkflow" class="btn" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); margin-top: 15px;">
+                    🔔 Test Workflow (Send Reminders)
+                </button>
+                
+                <div id="status" class="status"></div>
+            </div>
+            
+            <div class="api-section">
+                <h3>📡 API Endpoints</h3>
+                
+                <div class="api-endpoint">
+                    <span class="method get">GET</span>
+                    <code>/api/v1/simple</code> - List all subscriptions (no DB)
+                </div>
+                
+                <div class="api-endpoint">
+                    <span class="method post">POST</span>
+                    <code>/api/v1/simple</code> - Create new subscription (no DB)
+                </div>
+                
+                <div class="api-endpoint">
+                    <span class="method get">GET</span>
+                    <code>/api/v1/simple/test-workflow</code> - Test workflow simulation
+                </div>
+                
+                <div class="api-endpoint">
+                    <span class="method get">GET</span>
+                    <code>/api/v1/subscription</code> - Full API (requires DB)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set minimum date to today
+        document.getElementById('renewalDate').min = new Date().toISOString().split('T')[0];
+        
+        document.getElementById('subscriptionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Add default values
+            data.status = 'active';
+            data.paymentMethod = 'Credit Card';
+            
+            const statusDiv = document.getElementById('status');
+            
+            try {
+                const response = await fetch('/api/v1/simple', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = '✅ Subscription created successfully! Click "Test Workflow" to simulate reminders.';
+                    statusDiv.style.display = 'block';
+                    e.target.reset();
+                } else {
+                    throw new Error(result.message || 'Failed to create subscription');
+                }
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = '❌ Error: ' + error.message;
+                statusDiv.style.display = 'block';
+            }
+        });
+
+        // Test workflow button
+        document.getElementById('testWorkflow').addEventListener('click', async () => {
+            const statusDiv = document.getElementById('status');
+            
+            try {
+                const response = await fetch('/api/v1/simple/test-workflow');
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    statusDiv.className = 'status success';
+                    statusDiv.innerHTML = `
+                        <strong>🔔 Workflow Test Completed!</strong><br>
+                        Subscription: ${result.subscription.name}<br>
+                        Email: ${result.subscription.user.email}<br>
+                        Reminders sent: ${result.reminderResults.length}
+                    `;
+                    statusDiv.style.display = 'block';
+                } else {
+                    throw new Error(result.message || 'Failed to test workflow');
+                }
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = '❌ Error: ' + error.message;
+                statusDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
